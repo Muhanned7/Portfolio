@@ -78,8 +78,59 @@
                 </div>
                 </div>
         </section>
+        <section>
+        <div class="classifier-container">
+            <h1>Email Spam Classifier</h1>
+            <textarea id="emailText" placeholder="Paste email content here..." rows="10"></textarea>
+            <button id="classifyBtn">Classify Email</button>
+            <div id="result"></div>
+        </div>
+    </section>
     </main>
+    
 
+    <script>
+        
+document.getElementById('classifyBtn').addEventListener('click', async()=>{
+    const emailText = document.getElementById('emailText').value;
+    const resultDiv = document.getElementById('result');
+    if (!emailText.trim()) {
+        resultDiv.innerHTML = '<p class ="error"> Please enter email text</p>';
+        return;        
+    }
+    resultDiv.innerHTML = '<p>Classifying...</p>';
+    try {
+        const response =await fetch('/classify',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body:JSON.stringify({email:emailText})
+        });
+        const data = await response.json();
+        if (data.error){
+            resultDiv.innerHTML = `<p class="error"> Error: ${data.error}</p>`;
+
+        }else {
+            const spamClass = data.is_spam ? 'spam' : 'ham';
+            resultDiv.innerHTML =`
+            <div class="result-box ${spamClass}">
+            <h2>${data.is_spam ? 'SPAM' : '✅ NOT SPAM'}</h2>
+                            <p>Confidence: ${(data.confidence * 100).toFixed(2)}%</p>
+                            <p>Spam Probability: ${(data.spam_probability * 100).toFixed(2)}%</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+            
+        
+
+
+    });
+
+    </script>
     <footer class="contact">
         <p>Ready to collaborate? Let's build something great.</p>
         <div class="social-links">

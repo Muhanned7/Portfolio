@@ -8,6 +8,7 @@ services:
       - "3000:3000"
     environment:
       - PORT= 3000
+      - ML_API_URL=http://ml-api:5000
     volumes:
       - .:/portfolio
       - /portfolio/node_modules
